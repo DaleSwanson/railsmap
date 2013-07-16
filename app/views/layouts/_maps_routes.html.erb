@@ -1,0 +1,22 @@
+<script>
+	
+var formText = 
+	"<input type='text' name='routeNum' style='width:3em' value='0'><br>"+
+	"<label><input type='radio' name='color' value='red' onclick='log()'>Red</label>"+
+	"<label><input type='radio' name='color' value='blue' onclick='log()'>Blue</label>"+
+	"<label><input type='radio' name='color' value='yellow' onclick='log()'>Yellow</label><br>"+
+	"<label><input type='radio' name='color' value='grey' onclick='log()'>Bush</label>"+
+	"<label><input type='radio' name='color' value='brown' onclick='log()'>Herd</label>"+
+	"<label><input type='radio' name='color' value='black' onclick='log()'>Road</label>";
+
+<% @allRoutes.each do |route| %>
+	var <%= route.name %> = L.polyline([
+	<% allRoutePoints = RoutePoint.where(routeName: route.name) %>
+	<% allRoutePoints.each do |point| %>
+		[<%= point.lat %>, <%= point.long %>],
+	<% end %>
+	],{color:'<%= route.color %>', smoothfactor: 10.0, clickable: true}).bindPopup("<a href='../routes/<%= route.id %>/edit'>Edit</a><br><form name='<%= route.name %>'><%= route.name %><br>"+formText+"</form>");
+	layerTrails.addLayer(<%= route.name %>);
+<% end %>
+
+</script>

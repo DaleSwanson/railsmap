@@ -1,0 +1,38 @@
+<p id="notice"><%= notice %></p>
+<table>
+	<tr><td><b>Name:</b></td><td><%= best_in_place @route, :name %></td></tr>
+  <tr><td><b>Park:</b></td><td><%= best_in_place @route, :range %></td></tr>
+  <tr><td><b>Color:</b></td><td><%= best_in_place @route, :color %></td></tr>
+  <tr><td><b>Number:</b></td><td><%= best_in_place @route, :number %></td></tr>
+  <tr><td><b>Min Height:</b></td><td><%= best_in_place @route, :minHeight %></td></tr>
+  <tr><td><b>Max Height:</b></td><td><%= best_in_place @route, :maxHeight %></td></tr>
+  <tr><td><b>Gain:</b></td><td><%= best_in_place @route, :gain %></td></tr>
+  <tr><td><b>Loss:</b></td><td><%= best_in_place @route, :loss %></td></tr>
+  <tr><td><b>Distance:</b></td><td><%= best_in_place @route, :distance %></td></tr>
+</table>
+<table class="showTable">
+  <thead><tr>
+    <th>ID</th>
+    <th>routeName</th>
+    <th>lat</th>
+    <th>long</th>
+    <th>height</th>
+  </tr></thead>
+
+<tbody>
+<% @route_point.each do |route_point| %>
+  <tr>
+    <td><%= route_point.id %></td>
+    <td><%= route_point.routeName %></td>
+    <td><%= route_point.lat %></td>
+    <td><%= route_point.long %></td>
+    <td><%= route_point.height %></td>
+  </tr>
+<% end %>
+</tbody></table>
+
+
+
+
+<%= link_to 'Edit', edit_route_path(@route) %> |
+<%= link_to 'Back', routes_path %>

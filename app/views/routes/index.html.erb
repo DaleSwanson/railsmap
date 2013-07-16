@@ -1,0 +1,48 @@
+<h1>Listing Routes</h1> 
+
+<%= link_to 'Add New Route', new_route_path %>
+
+<table class="listTable">
+  <thead><tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Park</th>
+    <th>Color</th>
+    <th>Number</th>
+    <th>Min Height</th>
+    <th>Max Height</th>
+    <th>Gain</th>
+    <th>Loss</th>
+    <th>Distance</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr></thead>
+	<tbody>
+<% @route.each do |route| %>
+  <tr>
+		<td><%= route.id %></td>
+		
+		<td><%= best_in_place route, :name %></td>
+		<td><%= best_in_place route, :range %></td>  
+		<td><%= best_in_place route, :color, inner_class: "typeSelect", type: :select, :collection => [
+    ["Red", "Red"], ["Blue", "Blue"], ["Yellow", "Yellow"], ["Grey", "Bush"], ["Brown", "Herd"], ["Black", "Road"]
+    ] %></td>  
+		<td><%= best_in_place route, :number, inner_class: "number" %></td>  
+		<td><%= best_in_place route, :minHeight, inner_class: "number" %></td>  
+		<td><%= best_in_place route, :maxHeight, inner_class: "number" %></td>  
+		<td><%= best_in_place route, :gain, inner_class: "number" %></td>  
+		<td><%= best_in_place route, :loss, inner_class: "number" %></td>  
+		<td><%= best_in_place route, :distance, inner_class: "number" %></td>  
+			
+		
+    <td><%= link_to 'Show', route %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Edit', edit_route_path(route) %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Destroy', route, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</tbody></table>
+
+<br />
+
+

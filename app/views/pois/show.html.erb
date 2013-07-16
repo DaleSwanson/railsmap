@@ -1,0 +1,13 @@
+<p id="notice"><%= notice %></p>
+<table>
+  <tr><td><b>Name:</b></td><td><%= best_in_place @poi, :name %></td></tr>
+  <tr><td><b>Lat:</b></td><td><%= best_in_place @poi, :lat %></td></tr>
+  <tr><td><b>Long:</b></td><td><%= best_in_place @poi, :long %></td></tr>
+  <tr><td><b>Elevation:</b></td><td><%= best_in_place @poi, :elevation %></td></tr>
+  <tr><td><b>Type:</b></td><td><%= best_in_place @poi, :poitype %></td></tr>
+  <tr><td><b>Park:</b></td><td><%= best_in_place @poi, :range %></td></tr>
+</table>
+
+
+<%= link_to 'Edit', edit_poi_path(@poi) %> |
+<%= link_to 'Back', pois_path %>

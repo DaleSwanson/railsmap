@@ -1,0 +1,51 @@
+<script>
+//I'm sure this violates Rails dogma for where javascript should go, but I couldn't acesses these variables from a js file, so here they are.
+
+//Size map and right div
+document.getElementById('divMap').setAttribute("style","height:" + (window.innerHeight - 150) + "px;");
+document.getElementById('divRight').setAttribute("style","height:" + (window.innerHeight - 150) + "px;");
+
+var startingLatLong = [<%= @park.lat %>, <%= @park.long %>];
+var customIcon = "<%= asset_path(@park.customIcon) %>";
+
+//Park: <%= @park.name %> [<%= @park.lat %>, <%= @park.long %>]
+	
+var lstListSummits = [
+<% @listSummits.each do |listSummit| %>
+[<%= listSummit.lat %>,<%= listSummit.long %>,"<%= listSummit.poitype %>","<%= listSummit.name %>",<%= listSummit.elevation %>,"<%= listSummit.range %>"],
+<% end %>
+]
+
+var lstSummits = [
+<% @summits.each do |summit| %>
+[<%= summit.lat %>,<%= summit.long %>,"<%= summit.poitype %>","<%= summit.name %>",<%= summit.elevation %>,"<%= summit.range %>"],
+<% end %>
+]
+
+var lstTrailheads = [
+<% @trailheads.each do |trailhead| %>
+[<%= trailhead.lat %>,<%= trailhead.long %>,"<%= trailhead.poitype %>","<%= trailhead.name %>",<%= trailhead.elevation %>,"<%= trailhead.range %>"],
+<% end %>
+]
+
+var lstTents = [
+<% @camps.each do |camp| %>
+[<%= camp.lat %>,<%= camp.long %>,"<%= camp.poitype %>","<%= camp.name %>",<%= camp.elevation %>,"<%= camp.range %>"],
+<% end %>
+]
+
+var lstLeantos = [
+<% @leantos.each do |leanto| %>
+[<%= leanto.lat %>,<%= leanto.long %>,"<%= leanto.poitype %>","<%= leanto.name %>",<%= leanto.elevation %>,"<%= leanto.range %>"],
+<% end %>
+]
+
+var lstJcts = [
+<% @jcts.each do |jct| %>
+[<%= jct.lat %>,<%= jct.long %>,"<%= jct.poitype %>","<%= jct.name %>",<%= jct.elevation %>,"<%= jct.range %>"],
+<% end %>
+]
+
+
+
+</script>

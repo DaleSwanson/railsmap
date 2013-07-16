@@ -1,0 +1,19 @@
+<% provide(:title, @park.name) %>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= full_title(yield(:title)) %></title>
+    <%= stylesheet_link_tag "maps", media: "all" %>
+    <%= javascript_include_tag "leaflet" %>
+    <%= render 'layouts/shim' %>
+  </head>
+  <body>
+    <%= render 'layouts/maps_header' %>
+    <%= render 'layouts/maps_map' %>
+    <%= render 'layouts/maps_side' %>
+    <%= render 'layouts/maps_footer' %>
+    <%= yield %>
+    <%= javascript_include_tag "maps" %>
+    <%= render 'layouts/maps_routes' %>
+  </body>
+</html>

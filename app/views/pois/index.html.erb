@@ -1,0 +1,38 @@
+<h1>Listing POIs</h1>
+
+<%= link_to 'Add New Poi', new_poi_path %>
+
+<table class="listTable">
+  <thead><tr>
+    <th>#&nbsp;</th>
+    <th>Name</th>
+    <th>Lat</th>
+    <th>Long</th>
+    <th>Elevation</th>
+    <th>Type</th>
+    <th>Park</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr></thead>
+	<tbody>
+<% @poi.each do |poi| %>
+  <tr>
+    <td><%= poi.id %></td>
+    <td><%= best_in_place poi, :name %></td>
+    <td><%= best_in_place poi, :lat, inner_class: "latlong" %></td>
+    <td><%= best_in_place poi, :long, inner_class: "latlong" %></td>
+    <td><%= best_in_place poi, :elevation, inner_class: "number" %></td>
+    <td><%= best_in_place poi, :poitype, inner_class: "typeSelect", type: :select, :collection => [
+    ["List Summit", "List Summit"], ["Summit", "Summit"], ["Trailhead", "Trailhead"], ["Camp", "Camp"], ["Leanto", "Leanto"], ["Jct", "Jct"]
+    ] %>&nbsp;</td>
+    <td><%= best_in_place poi, :range %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Show', poi %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Edit', edit_poi_path(poi) %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Destroy', poi, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</tbody></table>
+
+
+

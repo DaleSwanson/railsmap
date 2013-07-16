@@ -1,0 +1,11 @@
+<p id="notice"><%= notice %></p>
+<table>
+	<tr><td><b>Name:</b></td><td><%= best_in_place @park, :name %></td></tr>
+  <tr><td><b>Lat:</b></td><td><%= best_in_place @park, :lat %></td></tr>
+  <tr><td><b>Long:</b></td><td><%= best_in_place @park, :long %></td></tr>
+  <tr><td><b>Icon:</b></td><td><%= best_in_place @park, :customIcon %></td></tr>
+  <tr><td><b>Alt:</b></td><td><%= best_in_place @park, :alternate, type: :textarea %></td></tr>
+</table>
+
+<%= link_to 'Edit', edit_park_path(@park) %> |
+<%= link_to 'Back', parks_path %>
