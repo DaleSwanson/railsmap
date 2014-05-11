@@ -2,7 +2,7 @@ class PoisController < ApplicationController
   # GET /Pois
   # GET /users.json
   def index
-    @poi = Poi.all
+    @poi = Poi.includes(:park, :poi_type).all
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,7 +13,7 @@ class PoisController < ApplicationController
   # GET /users/1
   # GET /users/1.json
   def show
-    @poi = Poi.find(params[:id])
+    @poi = Poi.includes(:park, :poi_type).find(params[:id])
 
     respond_to do |format|
       format.html # show.html.erb

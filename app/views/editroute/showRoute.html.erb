@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>One Route</title>
+    <%= stylesheet_link_tag "maps", media: "all" %>
+    <%= javascript_include_tag "leaflet" %>
+    <%= render 'layouts/shim' %>
+  </head>
+  <body>
+		<%= javascript_include_tag "editroute" %>
+    <%= render 'layouts/maps_header' %>
+    <%= render 'layouts/maps_map' %>
+    <%= render 'layouts/maps_side' %>
+    <%= render 'layouts/maps_footer' %>
+  </body>
+</html>
+
+
+
+
+<script>
+//I'm sure this violates Rails dogma for where javascript should go, but I couldn't acesses these variables from a js file, so here they are.
+
+
+var JctIcon = L.Icon.extend({ //smaller junction icon
+	options: {
+	iconSize:	 [6, 6], // size of the icon
+	iconAnchor:   [3, 3], // point of the icon which will correspond to marker's location
+	popupAnchor:  [0, -3] // point from which the popup should open relative to the iconAnchor
+	}
+});
+
+var	iconTemp = new JctIcon({iconUrl: "<%= asset_path('icons/temppointer.png') %>"});
+
+
+//Size map and right div
+document.getElementById('divMap').setAttribute("style","height:" + (window.innerHeight - 150) + "px;");
+document.getElementById('divRight').setAttribute("style","height:" + (window.innerHeight - 150) + "px;");
+
+var startingLatLong = [<%= @points.last.lat %>, <%= @points.last.long %>];
+
+	
+var map = L.map('divMap').setView(startingLatLong, 12);
+
+L.tileLayer('http://tile.cloudmade.com/f19d6045b0ac4f68bc75b707ac14e3dd/997/256/{z}/{x}/{y}.png', {
+	maxZoom: 18,
+	attribution: 'Odin'
+}).addTo(map);
+
+
+
+
+var popuptext;
+
+
+
+
+<% lastPoint = @points.first %>
+var RouteSegment = [];
+var breakMarker = [];
+
+<% i = 0 %>
+<% @points.each do |point| %>
+	<% if lastPoint != point %>
+		<% i += 1 %>
+		RouteSegment[<%= i %>] = L.polyline([
+		[<%= lastPoint.lat %>,<%= lastPoint.long %>],
+		[<%= point.lat %>,<%= point.long %>],
+		],{color: '<%= randomColor %>', clickable: true}).addTo(map);
+		
+		
+		
+		
+		breakMarker[<%= i %>] = L.marker([<%= point.lat %>, <%= point.long %>], {icon: iconTemp}).bindPopup(
+	
+		"Route: <%= @id %> <br>lat: <%= point.lat %> <br> long: <%= point.long %> &nbsp;&nbsp;&nbsp;<br>"+
+		"<a href='/editroute/<%= @id %>/<%= point.lat %>/<%= point.long %>'>Break Here</a><br>"+
+		
+		""
+
+		).addTo(map);
+	
+	
+	
+		
+	<% end %>
+	<% lastPoint = point %>
+<% end %>
+
+
+
+
+
+L.control.scale().addTo(map); //the distance scale
+
+map.on('mousemove', function(e) { //puts the lat long in the footer, helps while testing
+	var temp = e.latlng.lat + "; " + e.latlng.lng;
+	document.getElementById('divFooter').innerHTML=temp;
+})
+
+map.on('click', function(e) { //click for lat long in sidebar
+	var rnd = 6;
+	var temp = (e.latlng.lat).toFixed(rnd) + ", " + (e.latlng.lng).toFixed(rnd);
+	
+	document.getElementById('divRightBody').innerHTML += "<br>"+temp;
+})
+
+
+
+
+
+</script>

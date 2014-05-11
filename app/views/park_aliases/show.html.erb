@@ -1,0 +1,12 @@
+<p id="notice"><%= notice %></p>
+<table>
+	<tr><td><b>ID:</b></td><td><%= @park_alias.id %></td></tr>
+  <tr><td><b>name:</b></td><td><%= best_in_place @park_alias, :name %></td></tr>
+  <tr><td><b>Park ID:</b></td><td><%= best_in_place @park_alias, :park_id %></td></tr>
+  <tr><td><b>Park Name</b></td><td><%= @park_alias.park.name %></td></tr>
+</table>
+
+<%= debug @park_alias %>
+
+<%= link_to 'Edit', edit_park_alias_path(@park_alias) %> |
+<%= link_to 'Back', park_alias_path %>

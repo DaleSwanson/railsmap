@@ -5,6 +5,7 @@
     <title><%= full_title(yield(:title)) %></title>
     <%= stylesheet_link_tag "maps", media: "all" %>
     <%= javascript_include_tag "leaflet" %>
+    <%= javascript_include_tag "leaflet-providers" %>
     <%= render 'layouts/shim' %>
   </head>
   <body>

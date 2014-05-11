@@ -1,0 +1,32 @@
+<h1>Listing Pairs</h1> 
+
+<%= link_to 'Add New Pair', new_pair_path %>
+
+<table class="listTable">
+	<thead><tr>
+    <th>ID</th>
+    <th>n1</th>
+    <th>n2</th>
+    <th>Route</th>
+    <th>Distance</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr></thead>
+  <tbody>
+<% @pair.each do |pair| %>
+  <tr>
+    <td><%= pair.id %></td>
+    <td><%= best_in_place pair, :n1, inner_class: "latlong" %></td>
+    <td><%= best_in_place pair, :n2, inner_class: "latlong" %></td>
+    <td><%= best_in_place pair, :route_id, inner_class: "latlong" %></td>
+    <td><%= pair.route.distance %></td>
+    <td><%= link_to 'Show', pair %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Edit', edit_pair_path(pair) %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Destroy', pair, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+

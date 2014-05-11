@@ -7,5 +7,7 @@
   <tr><td><b>Alt:</b></td><td><%= best_in_place @park, :alternate, type: :textarea %></td></tr>
 </table>
 
+<%= debug @park %>
+
 <%= link_to 'Edit', edit_park_path(@park) %> |
 <%= link_to 'Back', parks_path %>

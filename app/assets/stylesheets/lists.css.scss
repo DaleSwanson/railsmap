@@ -9,6 +9,7 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require_self
+ *= require theme.blue.css
  */
 @import "bootstrap"; /* http://twitter.github.io/bootstrap/base-css.html */
 $inputWidth: 25px;
@@ -39,6 +40,11 @@ $inputWidth: 25px;
 	@extend .input-mini;
 }
 
+.smallRow {
+	width: 1em;
+}
+
+
 .typeSelect {
 	@extend .input-medium;
 }
@@ -53,3 +59,5 @@ $inputWidth: 25px;
   border: solid 2px #666;
   &:first-letter { text-transform: uppercase };
 }
+
+

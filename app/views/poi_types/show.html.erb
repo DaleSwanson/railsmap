@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+<table>
+	<tr><td><b>ID:</b></td><td><%= @poi_type.id %></td></tr>
+  <tr><td><b>Name:</b></td><td><%= best_in_place @poi_type, :name %></td></tr>
+  <tr><td><b>Icon:</b></td><td><%= best_in_place @poi_type, :icon %></td></tr>
+  <tr><td><b>Highlight Icon:</b></td><td><%= best_in_place @poi_type, :highlight %></td></tr>
+  <tr><td><b>Parameter:</b></td><td><%= best_in_place @poi_type, :parameter %></td></tr>
+  <tr><td><b>Size:</b></td><td><%= best_in_place @poi_type, :size %></td></tr>
+</table>
+
+<%= debug @poi_type %>
+
+<%= link_to 'Edit', edit_poi_type_path(@poi_type) %> |
+<%= link_to 'Back', poi_types_path %>

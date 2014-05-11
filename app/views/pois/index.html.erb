@@ -9,8 +9,11 @@
     <th>Lat</th>
     <th>Long</th>
     <th>Elevation</th>
+    <th>TypeID</th>
     <th>Type</th>
+    <th>ParkID</th>
     <th>Park</th>
+    <th>Description</th>
     <th>&nbsp;</th>
     <th>&nbsp;</th>
     <th>&nbsp;</th>
@@ -22,11 +25,12 @@
     <td><%= best_in_place poi, :name %></td>
     <td><%= best_in_place poi, :lat, inner_class: "latlong" %></td>
     <td><%= best_in_place poi, :long, inner_class: "latlong" %></td>
-    <td><%= best_in_place poi, :elevation, inner_class: "number" %></td>
-    <td><%= best_in_place poi, :poitype, inner_class: "typeSelect", type: :select, :collection => [
-    ["List Summit", "List Summit"], ["Summit", "Summit"], ["Trailhead", "Trailhead"], ["Camp", "Camp"], ["Leanto", "Leanto"], ["Jct", "Jct"]
-    ] %>&nbsp;</td>
-    <td><%= best_in_place poi, :range %>&nbsp;&nbsp;</td>
+    <td><%= best_in_place poi, :height, inner_class: "number" %></td>
+    <td><%= best_in_place poi, :poi_type_id, inner_class: "number" %></td>
+    <td><%= poi.poi_type.name %></td>
+    <td><%= best_in_place poi, :park_id, inner_class: "number" %></td>
+    <td><%= poi.park.name %></td>
+    <td><%= best_in_place poi, :description, type: :textarea %></td>
     <td><%= link_to 'Show', poi %>&nbsp;&nbsp;</td>
     <td><%= link_to 'Edit', edit_poi_path(poi) %>&nbsp;&nbsp;</td>
     <td><%= link_to 'Destroy', poi, method: :delete, data: { confirm: 'Are you sure?' } %></td>

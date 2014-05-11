@@ -11,64 +11,104 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130629041535) do
+ActiveRecord::Schema.define(:version => 20130810081553) do
+
+  create_table "nodes", :force => true do |t|
+    t.float    "lat"
+    t.float    "long"
+    t.integer  "poi_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "pairs", :force => true do |t|
+    t.integer  "n1"
+    t.integer  "n2"
+    t.integer  "route_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "park_aliases", :force => true do |t|
+    t.string   "name"
+    t.integer  "park_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
 
   create_table "parks", :force => true do |t|
     t.string   "name"
     t.float    "lat"
     t.float    "long"
-    t.string   "customIcon"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+    t.string   "description"
+    t.integer  "zoom"
+  end
+
+  create_table "poi_types", :force => true do |t|
+    t.string   "name"
+    t.string   "icon"
+    t.string   "highlight"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
-    t.string   "alternate"
+    t.string   "parameter"
+    t.integer  "size"
   end
 
   create_table "pois", :force => true do |t|
     t.float    "lat"
     t.float    "long"
-    t.string   "poitype"
     t.string   "name"
-    t.integer  "elevation"
-    t.string   "range"
+    t.integer  "height"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "description"
+    t.integer  "poi_type_id"
+    t.integer  "park_id"
   end
 
-  add_index "pois", ["poitype"], :name => "index_pois_on_poitype"
-  add_index "pois", ["range"], :name => "index_pois_on_range"
-
   create_table "route_points", :force => true do |t|
-    t.string   "routeName"
     t.float    "lat"
     t.float    "long"
     t.integer  "height"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
+    t.integer  "route_id"
   end
 
   create_table "routes", :force => true do |t|
     t.string   "name"
     t.string   "color"
-    t.string   "range"
     t.integer  "number"
     t.integer  "maxHeight"
     t.integer  "minHeight"
     t.integer  "distance"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
     t.integer  "gain"
     t.integer  "loss"
+    t.string   "description"
+    t.integer  "trail_id"
+    t.integer  "park_id"
   end
 
-  create_table "users", :force => true do |t|
+  create_table "trails", :force => true do |t|
+    t.string   "number"
     t.string   "name"
-    t.string   "email"
-    t.datetime "created_at",      :null => false
-    t.datetime "updated_at",      :null => false
-    t.string   "password_digest"
+    t.string   "park"
+    t.string   "color"
+    t.float    "mileage"
+    t.integer  "hike_use"
+    t.integer  "horse_use"
+    t.integer  "bike_use"
+    t.integer  "snowshoe_use"
+    t.integer  "cross_country_use"
+    t.integer  "snowmobile_use"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+    t.integer  "route_id"
+    t.integer  "park_id"
   end
-
-  add_index "users", ["email"], :name => "index_users_on_email", :unique => true
-  add_index "users", ["id"], :name => "id2"
 
 end

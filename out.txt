@@ -1,0 +1,10 @@
+Loading development environment (Rails 3.2.13)
+2.0.0p195 :001 > r
+NameError: undefined local variable or method `r' for main:Object
+	from (irb):1
+	from /home/dale/.rvm/gems/ruby-2.0.0-p195/gems/railties-3.2.13/lib/rails/commands/console.rb:47:in `start'
+	from /home/dale/.rvm/gems/ruby-2.0.0-p195/gems/railties-3.2.13/lib/rails/commands/console.rb:8:in `start'
+	from /home/dale/.rvm/gems/ruby-2.0.0-p195/gems/railties-3.2.13/lib/rails/commands.rb:41:in `<top (required)>'
+	from script/rails:6:in `require'
+	from script/rails:6:in `<main>'
+2.0.0p195 :002 > exit

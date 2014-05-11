@@ -2,18 +2,21 @@
 
 <%= link_to 'Add New Route', new_route_path %>
 
-<table class="listTable">
+<table class="tablesorter">
   <thead><tr>
     <th>ID</th>
     <th>Name</th>
     <th>Park</th>
+    <th>ParkID</th>
     <th>Color</th>
     <th>Number</th>
     <th>Min Height</th>
     <th>Max Height</th>
     <th>Gain</th>
     <th>Loss</th>
-    <th>Distance</th>
+    <th>Dis (ft)</th>
+    <th>Dis (mi)</th>
+    <th>Description</th>
     <th>&nbsp;</th>
     <th>&nbsp;</th>
     <th>&nbsp;</th>
@@ -24,9 +27,10 @@
 		<td><%= route.id %></td>
 		
 		<td><%= best_in_place route, :name %></td>
-		<td><%= best_in_place route, :range %></td>  
+		<td><%= route.park.name %></td>  
+		<td><%= best_in_place route, :park_id %></td>  
 		<td><%= best_in_place route, :color, inner_class: "typeSelect", type: :select, :collection => [
-    ["Red", "Red"], ["Blue", "Blue"], ["Yellow", "Yellow"], ["Grey", "Bush"], ["Brown", "Herd"], ["Black", "Road"]
+    ["Red", "Red"], ["Blue", "Blue"], ["Yellow", "Yellow"], ["Grey", "Bush"], ["Brown", "Unblazed"], ["Black", "Road"], ["#fff", "Unknown"]
     ] %></td>  
 		<td><%= best_in_place route, :number, inner_class: "number" %></td>  
 		<td><%= best_in_place route, :minHeight, inner_class: "number" %></td>  
@@ -34,7 +38,8 @@
 		<td><%= best_in_place route, :gain, inner_class: "number" %></td>  
 		<td><%= best_in_place route, :loss, inner_class: "number" %></td>  
 		<td><%= best_in_place route, :distance, inner_class: "number" %></td>  
-			
+		<td><%= feetToMiles(route.distance) %></td> 
+		<td><%= best_in_place route, :description, type: :textarea %></td>
 		
     <td><%= link_to 'Show', route %>&nbsp;&nbsp;</td>
     <td><%= link_to 'Edit', edit_route_path(route) %>&nbsp;&nbsp;</td>

@@ -5,47 +5,242 @@
 document.getElementById('divMap').setAttribute("style","height:" + (window.innerHeight - 150) + "px;");
 document.getElementById('divRight').setAttribute("style","height:" + (window.innerHeight - 150) + "px;");
 
-var startingLatLong = [<%= @park.lat %>, <%= @park.long %>];
-var customIcon = "<%= asset_path(@park.customIcon) %>";
+//All the code to build the map (formerly map.js):
 
-//Park: <%= @park.name %> [<%= @park.lat %>, <%= @park.long %>]
+//Initialize the map
+var map = L.map('divMap').setView([<%= @startLat %>, <%= @startLong %>], <%= @startZoom %>);
+
+//Create the map	
+L.tileLayer('http://tile.cloudmade.com/f19d6045b0ac4f68bc75b707ac14e3dd/997/256/{z}/{x}/{y}.png', {
+	maxZoom: 18,
+	attribution: 'Odin'
+}).addTo(map);
+
+
+//Code to add images of scanned maps as overlay:
+//they are layers already, but adding them to this layer lets them be turned off
+var layerScans = new L.LayerGroup(); 
+var layerUsgs = new L.LayerGroup(); 
+
+var imageBoundsMarcy = [[44.187769661, -74.083110226], [44.071878201, -73.821816444]];
+var imageBoundsSouth = [[44.16605162, -73.928969307], [44.05045995529445, -73.705480129]];
+var imageBoundsMarcyUsgs = [[44.125, -74.0], [44.0, -73.75]];
+
+var layerMarcy = L.imageOverlay("<%= asset_path('maps/marcy.png') %>", imageBoundsMarcy, {zIndex:-10});
+var layerSouth = L.imageOverlay("<%= asset_path('maps/south.png') %>", imageBoundsSouth);
+var layerMarcyUsgs = L.imageOverlay("<%= asset_path('maps/marcyusgs.png') %>", imageBoundsMarcyUsgs);
+
+layerScans.addLayer(layerMarcy,true);
+layerScans.addLayer(layerSouth,true);
+layerUsgs.addLayer(layerMarcyUsgs,true);
+//I can't figure out how to make these not cover the routes if selected after load
+//If you want to use them enable them on by default in that section below
+var layerDefault=""; //a way to get the plain leaflet layer back, probaly produces errors but works
+
+//add all base layers here:
+var baseLayers = {
+	"None": layerDefault,
+	"OpenStreetMap (trails)": L.tileLayer.provider('OpenStreetMap.Mapnik'),
+	"OpenStreetMap German Style (trails)": L.tileLayer.provider('OpenStreetMap.DE'),
+	"Thunderforest OpenCycleMap (contours)": L.tileLayer.provider('Thunderforest.OpenCycleMap'),
+	"MapQuest Aerial (sat)": L.tileLayer.provider('MapQuestOpen.Aerial'),
+	"Stamen Terrain (terrain)": L.tileLayer.provider('Stamen.Terrain'),
+	"Esri WorldImagery (sat)": L.tileLayer.provider('Esri.WorldImagery'),
+	"Scanned": layerScans,
+	"USGS": layerUsgs
+
+};
+
+//create overlay layers as layergroups so we can add markers to them:
+var layerTrails = new L.LayerGroup();
+var overlayMaps = {"Trails": layerTrails}; //rest are generated below
+<% if @trailOn %> 
+layerTrails.addTo(map);
+<% end %>
+
+layerParams = {};
+listLayers = [];
+
+<% @poi_types.each do |type| %>
+var <%= layerName(type.name) %> = new L.LayerGroup();
+overlayMaps["<%= type.name %>"] = <%= layerName(type.name) %>;
+<% if @layerOn[type.id] %>
+<%= layerName(type.name) %>.addTo(map);
+<% end %>
+listLayers.push('<%= layerName(type.name) %>')
+layerParams['<%= layerName(type.name) %>'] = '<%= type.parameter %>'
+<% end %>
+
+//create actual layer control box
+L.control.layers(baseLayers , overlayMaps).addTo(map); //the layer control box
+
+
+
+//Create the icon class for markers
+//Might make new class for highlighted icons so color can extend further
+
+var LargeIcon = L.Icon.extend({
+	options: {
+	//shadowUrl: 'leaf-shadow.png',
+
+	//these are x,y pairs: [0,0] is upper left, [16,32] is center bottom (assuming 32x32 icon size)
+	iconSize:	 [32, 32], // size of the icon
+	//shadowSize:   [50, 64], // size of the shadow
+	//Changed this to be bottom center:
+	iconAnchor:   [16, 32], // point of the icon which will correspond to marker's location
+	//shadowAnchor: [4, 62],  // the same for the shadow
+	popupAnchor:  [0, -32] // point from which the popup should open relative to the iconAnchor
+	}
+});
+
+var MedIcon = L.Icon.extend({ //smaller junction icon
+	options: {
+	iconSize:	 [16, 16], // size of the icon
+	iconAnchor:   [8, 16], // point of the icon which will correspond to marker's location
+	popupAnchor:  [0, -16] // point from which the popup should open relative to the iconAnchor
+	}
+});
+
+var SmallIcon = L.Icon.extend({ //smaller junction icon
+	options: {
+	iconSize:	 [6, 6], // size of the icon
+	iconAnchor:   [3, 3], // point of the icon which will correspond to marker's location
+	popupAnchor:  [0, -3] // point from which the popup should open relative to the iconAnchor
+	}
+});
+
+var iconTemp = new SmallIcon({iconUrl: "<%= asset_path('icons/temppointer.png') %>"})
+
+//Set URL for individual markers
+<% @poi_types.each do |type| %>
+	var <%= iconName(type.name) %> = new <%= iconSize(type.size) %>({iconUrl: "<%= asset_path('icons/'+type.icon) %>"});
+	var <%= highlightName(type.name) %> = new <%= iconSize(type.size) %>({iconUrl: "<%= asset_path('icons/'+type.highlight) %>"});
+<% end %>
+
+
+var poiType = [];
+<% @poi_types.each do |type| %>
+ poiType[<%= type.id %>] = "<%= type.name %>";
+<% end %>
+
+var newPoiPopup = L.popup().setContent('');
+
+
+function generatePoiPopup(lat, long, type, name, height, park, id) {
+	var text = '';
+	text += id+" &nbsp;&nbsp;&nbsp;"+name+" &nbsp;&nbsp;&nbsp;"+"<a href='../pois/"+id+"/edit'>Edit</a><br>";
+	text += height + " ft &nbsp;&nbsp;&nbsp;"+lat + ", " + long;
+	text += "<form name='poi"+id+"'> ";
+	text += "<table><tr><td> </td> ";
+	text += "           <td><label><input type='radio' name='poiType' value=2>Summit</label></td> ";
+	text += "           <td><label><input type='radio' name='poiType' value=1>Trailhead</label></td> ";
+	text += "           <td><label><input type='radio' name='poiType' value=5>Jct</label></td></tr> ";
+	text += "       <tr><td><label><input type='radio' name='poiType' value=4>Leanto</label></td> ";
+	text += "           <td><label><input type='radio' name='poiType' value=3>Tent</label></td> ";
+	text += "           <td><label><input type='radio' name='poiType' value=10>View</label></td> ";
+	text += "           <td><label><input type='radio' name='poiType' value=7>Other</label></td></tr></table> ";
+	text += "<table><tr><td>Lat, Long: </td><td><input type='text' name='latBox' style='width:7em' value='"+lat+"'></td> ";
+	text += "           <td><input type='text' name='longBox' style='width:7em' value='"+long+"'></td></tr> ";
+	text += "       <tr><td>Height: </td><td><input type='text' name='heightBox' style='width:7em' value='"+height+"'></td></tr> ";
+	text += "       <tr><td>Name: </td><td><input type='text' name='nameBox' style='width:7em' value='"+name+"'></td></tr> ";
+	text += "<tr><td><input type='button' value='Save' onclick='savePoi("+id+")'><td>";
+	text += "    <td><input type='button' value='Delete' onclick='deletePoi("+id+")'><td></tr>";
+	text += "</table>";
+	return text;
+}
+
+
+
+//Add markers of various types:
+<% @pois.each do |poi| %>
+	popuptext=generatePoiPopup(<%=poi.lat%>,<%=poi.long%>,'<%=poi.poi_type.name%>','<%=poi.name%>',<%=poi.height%>,'<%=poi.park.name%>',<%=poi.id%>);
+	var poi_<%= poi.id %> = L.marker([<%= poi.lat %>, <%= poi.long %>], {
+		id: <%= poi.id %>, icon: <%= iconName(poi.poi_type.name) %>, title: '<%= poi.name %>', height: <%= poi.height %>,
+		defaultIcon: <%= iconName(poi.poi_type.name) %>, highlightIcon: <%= highlightName(poi.poi_type.name) %>, highlightState: 0
+		}).bindPopup(popuptext);
+		
+	<%= layerName(poi.poi_type.name) %>.addLayer(poi_<%= poi.id %>);
+	poi_<%= poi.id %>.on('click', function (e) {clickMarker(<%= poi.id %>, poi_<%= poi.id %>);});
 	
-var lstListSummits = [
-<% @listSummits.each do |listSummit| %>
-[<%= listSummit.lat %>,<%= listSummit.long %>,"<%= listSummit.poitype %>","<%= listSummit.name %>",<%= listSummit.elevation %>,"<%= listSummit.range %>"],
+<% end %>
+
+	
+
+L.control.scale().addTo(map); //the distance scale
+
+map.on('mousemove', function(e) { //puts the lat long in the footer, helps while testing
+	var temp = e.latlng.lat + "; " + e.latlng.lng;
+	document.getElementById('divFooter').innerHTML=temp;
+})
+
+map.on('click', function(e) { //click for lat long in sidebar
+	var rnd = 6;
+	var lat = RoundTo(e.latlng.lat, 6);
+	var long = RoundTo(e.latlng.lng, 6);
+	
+	var temp = (lat) + ", " + (long);
+	
+	document.getElementById('divRightBody').innerHTML += "<br>"+temp;
+	if (routeMode) {clickRoute(lat, long);}
+	if (newPoiMode) {newPoi(lat, long, <%= @park.id %>);}
+})
+
+
+
+var node = []
+<% @nodes.each do |node| %>
+node[<%= node.id %>] = [<%= node.id %>,<%= node.lat %>,<%= node.long %>,<%= node.poi_id %>,'<%= node.poi.name %>'];
+<% end %>
+
+
+
+var nodes = [
+<% @nodes.each do |node| %>
+[<%= node.id %>,<%= node.lat %>,<%= node.long %>,<%= node.poi_id %>],
 <% end %>
 ]
 
-var lstSummits = [
-<% @summits.each do |summit| %>
-[<%= summit.lat %>,<%= summit.long %>,"<%= summit.poitype %>","<%= summit.name %>",<%= summit.elevation %>,"<%= summit.range %>"],
+<% if @nodesOn == 1 %>
+	<% @nodes.each do |node| %>
+		var tempMarker = L.marker([<%= node.lat %>, <%= node.long %>], {icon: iconTemp}).bindPopup('<%= node.id %>').addTo(map);
+	<% end %>
+<% end %>
+
+
+
+var totalNodes = <%= @nodes.count %>;
+
+var pairs = [//we flip n1, n2 to ensure each pairing appears with each pair in first column
+<% @pairs.each do |pair| %>
+[<%= pair.id %>,<%= pair.n1 %>,<%= pair.n2 %>,<%= pair.route_id %>,<%= pair.route.distance %>],
+[<%= pair.id %>,<%= pair.n2 %>,<%= pair.n1 %>,<%= pair.route_id %>,<%= pair.route.distance %>],
 <% end %>
 ]
 
-var lstTrailheads = [
-<% @trailheads.each do |trailhead| %>
-[<%= trailhead.lat %>,<%= trailhead.long %>,"<%= trailhead.poitype %>","<%= trailhead.name %>",<%= trailhead.elevation %>,"<%= trailhead.range %>"],
+var dis = {};
+var pairId = {};
+<% @pairs.each do |pair| %>
+dis["<%= pair.n1 %>:<%= pair.n2 %>"] = <%= pair.route.distance %>;
+dis["<%= pair.n2 %>:<%= pair.n1 %>"] = <%= pair.route.distance %>;
+pairId["<%= pair.n1 %>:<%= pair.n2 %>"] = <%= pair.route_id %>;
+pairId["<%= pair.n2 %>:<%= pair.n1 %>"] = <%= pair.route_id %>;
 <% end %>
-]
 
-var lstTents = [
-<% @camps.each do |camp| %>
-[<%= camp.lat %>,<%= camp.long %>,"<%= camp.poitype %>","<%= camp.name %>",<%= camp.elevation %>,"<%= camp.range %>"],
-<% end %>
-]
+var allNodes = []; //list of all nodes
+var connections = []; //list of each node's neighbors
+for (i = 0; i <= pairs.length-1; i++) {//
+	if (typeof connections[pairs[i][1]] === 'undefined') 
+	{//a new node
+		connections[pairs[i][1]] = '';
+		allNodes.push(pairs[i][1]);
+	}
+	connections[pairs[i][1]] += pairs[i][2].toString()+";";
+}
 
-var lstLeantos = [
-<% @leantos.each do |leanto| %>
-[<%= leanto.lat %>,<%= leanto.long %>,"<%= leanto.poitype %>","<%= leanto.name %>",<%= leanto.elevation %>,"<%= leanto.range %>"],
-<% end %>
-]
-
-var lstJcts = [
-<% @jcts.each do |jct| %>
-[<%= jct.lat %>,<%= jct.long %>,"<%= jct.poitype %>","<%= jct.name %>",<%= jct.elevation %>,"<%= jct.range %>"],
-<% end %>
-]
-
+for (i = 0; i <= connections.length-1; i++) {//
+	//if (!(typeof connections[pairs[i][1]] === 'undefined')) x;
+	connections[pairs[i][1]] = connections[pairs[i][1]].replace(/;$/,'');
+}
 
 
 </script>

@@ -8,8 +8,10 @@
     <th>Name</th>
     <th>Lat</th>
     <th>Long</th>
+    <th>Zoom</th>
     <th>customIcon</th>
     <th>Alternate Names</th>
+    <th>Description</th>
     <th>&nbsp;</th>
     <th>&nbsp;</th>
     <th>&nbsp;</th>
@@ -21,8 +23,10 @@
     <td><%= best_in_place park, :name %></td>
     <td><%= best_in_place park, :lat, inner_class: "latlong" %></td>
     <td><%= best_in_place park, :long, inner_class: "latlong" %></td>
+    <td><%= best_in_place park, :zoom, inner_class: "latlong" %></td>
     <td><%= best_in_place park, :customIcon %></td>
     <td><%= best_in_place park, :alternate, type: :textarea %></td>
+    <td><%= best_in_place park, :description, type: :textarea %></td>
     <td><%= link_to 'Show', park %>&nbsp;&nbsp;</td>
     <td><%= link_to 'Edit', edit_park_path(park) %>&nbsp;&nbsp;</td>
     <td><%= link_to 'Destroy', park, method: :delete, data: { confirm: 'Are you sure?' } %></td>

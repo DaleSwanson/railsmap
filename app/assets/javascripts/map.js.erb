@@ -1,7 +1,7 @@
 //Initialize the map
-var map = L.map('divMap').setView(startingLatLong, 12);
+var map = L.map('divMap').setView(startLatLong, startZoom);
 
-//Create the map	
+//Create the map
 L.tileLayer('http://tile.cloudmade.com/f19d6045b0ac4f68bc75b707ac14e3dd/997/256/{z}/{x}/{y}.png', {
 	maxZoom: 18,
 	attribution: 'Odin'
@@ -17,9 +17,9 @@ var imageBoundsMarcy = [[44.187769661, -74.083110226], [44.071878201, -73.821816
 var imageBoundsSouth = [[44.16605162, -73.928969307], [44.05045995529445, -73.705480129]];
 var imageBoundsMarcyUsgs = [[44.125, -74.0], [44.0, -73.75]];
 
-var layerMarcy = L.imageOverlay('maps/marcy.png', imageBoundsMarcy, {zIndex:-10});
-var layerSouth = L.imageOverlay('maps/south.png', imageBoundsSouth);
-var layerMarcyUsgs = L.imageOverlay('maps/marcyusgs.png', imageBoundsMarcyUsgs);
+var layerMarcy = L.imageOverlay("<%= asset_path('maps/marcy.png') %>", imageBoundsMarcy, {zIndex:-10});
+var layerSouth = L.imageOverlay("<%= asset_path('maps/south.png') %>", imageBoundsSouth);
+var layerMarcyUsgs = L.imageOverlay("<%= asset_path('maps/marcyusgs.png') %>", imageBoundsMarcyUsgs);
 
 layerScans.addLayer(layerMarcy,true);
 layerScans.addLayer(layerSouth,true);
@@ -58,25 +58,28 @@ var baseLayers = {
 
 //create overlay layers as layergroups so we can add markers to them:
 var layerListSummits = new L.LayerGroup();
-var layerSummits = new L.LayerGroup();
-var layerTrailheads = new L.LayerGroup();
-var layerLienTos = new L.LayerGroup();
-var layerTents = new L.LayerGroup();
-var layerViewpoints = new L.LayerGroup();
-var layerTrails = new L.LayerGroup();
-var layerJcts = new L.LayerGroup();
+var layerSummits     = new L.LayerGroup();
+var layerTrailheads  = new L.LayerGroup();
+var layerLienTos     = new L.LayerGroup();
+var layerTents       = new L.LayerGroup();
+var layerViewpoints  = new L.LayerGroup();
+var layerTrails      = new L.LayerGroup();
+var layerJcts        = new L.LayerGroup();
+var layerOthers      = new L.LayerGroup();
 
 //Add overlay layers to map, these will be on by default:
-layerListSummits.addTo(map);
-layerSummits.addTo(map);
-layerTrailheads.addTo(map);
-//layerLienTos.addTo(map);
-//layerTents.addTo(map);
-//layerViewpoints.addTo(map);
-layerTrails.addTo(map);
-layerJcts.addTo(map);
-//layerScans.addTo(map);
-//layerUsgs.addTo(map);
+if (listOn) {layerListSummits.addTo(map);}
+if (summitOn) {layerSummits.addTo(map);}
+if (trailheadOn) {layerTrailheads.addTo(map);}
+if (leantoOn) {layerLienTos.addTo(map);}
+if (tentOn) {layerTents.addTo(map);}
+if (viewOn) {layerViewpoints.addTo(map);}
+if (trailOn) {layerTrails.addTo(map);}
+if (jctOn) {layerJcts.addTo(map);}
+if (otherOn) {layerOthers.addTo(map);}
+if (scannedOn) {layerScans.addTo(map);}
+if (usgsOn) {layerUsgs.addTo(map);}
+
 
 //list all overlay layers here:
 var overlayMaps = {
@@ -88,6 +91,7 @@ var overlayMaps = {
 	"Viewpoints": layerViewpoints,
 	"Trails": layerTrails,
 	"Jcts": layerJcts,
+	"Other": layerOthers,
 	
 	
 };
@@ -131,6 +135,8 @@ var	iconListSummit = new MainIcon({iconUrl: customIcon}),
 		iconLeanto = new MainIcon({iconUrl: "<%= asset_path('icons/leanto5.png') %>"}),
 		iconTrailhead = new MainIcon({iconUrl: "<%= asset_path('icons/parkingsign1.png') %>"}),
 		iconJct = new JctIcon({iconUrl: "<%= asset_path('icons/jct.png') %>"}),
+		iconTemp = new JctIcon({iconUrl: "<%= asset_path('icons/temppointer.png') %>"}),
+		iconOther = new JctIcon({iconUrl: "<%= asset_path('icons/temppointer.png') %>"}),
 		
 		iconListSummitRed = new MainIcon({iconUrl: "<%= asset_path('icons/46red.png') %>"}),
 		iconSummitRed = new MainIcon({iconUrl: "<%= asset_path('icons/peakred.png') %>"}),
@@ -144,6 +150,39 @@ var	iconListSummit = new MainIcon({iconUrl: customIcon}),
 
 var popuptext;
 
+function generatePoiPopup(lat, long, type, name, height, park, id)
+{
+	var text = '';
+	
+	text += id+" &nbsp;&nbsp;&nbsp;"+name+" &nbsp;&nbsp;&nbsp;"+"<a href='../pois/"+id+"/edit'>Edit</a><br>";
+	text += height + " ft &nbsp;&nbsp;&nbsp;"+lat + ", " + long;
+	text += "<form name='poi"+id+"'> ";
+	text += "<table><tr><td><label><input type='radio' name='poiType' value='List Summit'>List</label</td> ";
+	text += "           <td><label><input type='radio' name='poiType' value='Summit'>Summit</label</td> ";
+	text += "           <td><label><input type='radio' name='poiType' value='Trailhead'>Trailhead</label</td> ";
+	text += "           <td><label><input type='radio' name='poiType' value='Jct'>Jct</label</td></tr> ";
+	text += "       <tr><td><label><input type='radio' name='poiType' value='Leanto'>Leanto</label</td> ";
+	text += "           <td><label><input type='radio' name='poiType' value='Camp'>Camp</label</td> ";
+	text += "           <td><label><input type='radio' name='poiType' value='View'>View</label</td> ";
+	text += "           <td><label><input type='radio' name='poiType' value='Other'>Other</label</td></tr></table> ";
+	text += "<table><tr><td>Lat, Long: </td><td><input type='text' name='latBox' style='width:7em' value='"+lat+"'></td> ";
+	text += "           <td><input type='text' name='longBox' style='width:7em' value='"+long+"'></td></tr> ";
+	text += "       <tr><td>Height: </td><td><input type='text' name='heightBox' style='width:7em' value='"+height+"'></td></tr> ";
+	text += "       <tr><td>Name: </td><td><input type='text' name='nameBox' style='width:7em' value='"+name+"'></td></tr> ";
+	text += "<tr><td><input type='button' value='Save' onclick='savePoi("+id+")'><td>";
+	text += "    <td><input type='button' value='Delete' onclick='deletePoi("+id+")'><td></tr>";
+	text += "</table>";
+	
+	
+	
+	
+	
+	
+	return text;
+	
+}
+
+
 
 //Add items from POI arrays
 //Instantiuated in poi.js
@@ -151,10 +190,7 @@ var popuptext;
 //Add markers of various types:
 var markerListSummits = [];
 for (i = 0; i <= lstListSummits.length-1; i++) {//add list summits
-	popuptext = 
-		lstListSummits[i][3] + "<br>" + 
-		lstListSummits[i][4].toString() + " ft <br>" +
-		lstListSummits[i][0].toString() + ", " + lstListSummits[i][1].toString() + "<br>";
+	popuptext = generatePoiPopup(lstListSummits[i][0],lstListSummits[i][1],lstListSummits[i][2],lstListSummits[i][3],lstListSummits[i][4],lstListSummits[i][5],lstListSummits[i][6]);
 		
 	markerListSummits[i] = L.marker([lstListSummits[i][0], lstListSummits[i][1]], {
 		id: i, //id is used when marker is clicked
@@ -170,10 +206,7 @@ for (i = 0; i <= lstListSummits.length-1; i++) {//add list summits
 
 var markerSummits = [];
 for (i = 0; i <= lstSummits.length-1; i++) {//add regular summits
-	popuptext = 
-		lstSummits[i][3] + "<br>" + 
-		lstSummits[i][4].toString() + " ft <br>" +
-		lstSummits[i][0].toString() + ", " + lstSummits[i][1].toString() + "<br>";
+	popuptext =  generatePoiPopup(lstSummits[i][0],lstSummits[i][1],lstSummits[i][2],lstSummits[i][3],lstSummits[i][4],lstSummits[i][5],lstSummits[i][6]);
 	
 	markerSummits[i] = L.marker([lstSummits[i][0], lstSummits[i][1]], {
 		id: i,
@@ -190,10 +223,7 @@ for (i = 0; i <= lstSummits.length-1; i++) {//add regular summits
 
 var markerTrailheads = [];
 for (i = 0; i <= lstTrailheads.length-1; i++) {//add trailheads
-	popuptext = 
-		lstTrailheads[i][3] + "<br>" + 
-		lstTrailheads[i][4].toString() + " ft <br>" +
-		lstTrailheads[i][0].toString() + ", " + lstTrailheads[i][1].toString() + "<br>";
+	popuptext =  generatePoiPopup(lstTrailheads[i][0],lstTrailheads[i][1],lstTrailheads[i][2],lstTrailheads[i][3],lstTrailheads[i][4],lstTrailheads[i][5],lstTrailheads[i][6]);
 	
 	markerTrailheads[i] = L.marker([lstTrailheads[i][0], lstTrailheads[i][1]], {
 		id: i,
@@ -209,10 +239,7 @@ for (i = 0; i <= lstTrailheads.length-1; i++) {//add trailheads
 
 var markerTents = [];
 for (i = 0; i <= lstTents.length-1; i++) {//add tenting sites
-	popuptext = 
-		lstTents[i][3] + "<br>" + 
-		lstTents[i][4].toString() + " ft <br>" +
-		lstTents[i][0].toString() + ", " + lstTents[i][1].toString() + "<br>";
+	popuptext =  generatePoiPopup(lstTents[i][0],lstTents[i][1],lstTents[i][2],lstTents[i][3],lstTents[i][4],lstTents[i][5],lstTents[i][6]);
 	
 	markerTents[i] = L.marker([lstTents[i][0], lstTents[i][1]], {
 		id: i,
@@ -228,10 +255,7 @@ for (i = 0; i <= lstTents.length-1; i++) {//add tenting sites
 
 var markerLeantos = [];
 for (i = 0; i <= lstLeantos.length-1; i++) {//add leantos
-	popuptext = 
-		lstLeantos[i][3] + "<br>" + 
-		lstLeantos[i][4].toString() + " ft <br>" +
-		lstLeantos[i][0].toString() + ", " + lstLeantos[i][1].toString() + "<br>";
+	popuptext =  generatePoiPopup(lstLeantos[i][0],lstLeantos[i][1],lstLeantos[i][2],lstLeantos[i][3],lstLeantos[i][4],lstLeantos[i][5],lstLeantos[i][6]);
 	
 	markerLeantos[i] = L.marker([lstLeantos[i][0], lstLeantos[i][1]], {
 		id: i,
@@ -247,10 +271,7 @@ for (i = 0; i <= lstLeantos.length-1; i++) {//add leantos
 
 var markerJcts = [];
 for (i = 0; i <= lstJcts.length-1; i++) {//add junctions
-	popuptext = 
-		lstJcts[i][3] + "<br>" + 
-		lstJcts[i][4].toString() + " ft <br>" +
-		lstJcts[i][0].toString() + ", " + lstJcts[i][1].toString() + "<br>";
+	popuptext =  generatePoiPopup(lstJcts[i][0],lstJcts[i][1],lstJcts[i][2],lstJcts[i][3],lstJcts[i][4],lstJcts[i][5],lstJcts[i][6]);
 	
 	markerJcts[i] = L.marker([lstJcts[i][0], lstJcts[i][1]], {
 		id: i,
@@ -264,6 +285,22 @@ for (i = 0; i <= lstJcts.length-1; i++) {//add junctions
 	});		
 }
 
+var markerOthers = [];
+for (i = 0; i <= lstOthers.length-1; i++) {//add others
+	popuptext =  generatePoiPopup(lstOthers[i][0],lstOthers[i][1],lstOthers[i][2],lstOthers[i][3],lstOthers[i][4],lstOthers[i][5],lstOthers[i][6]);
+	
+	markerOthers[i] = L.marker([lstOthers[i][0], lstOthers[i][1]], {
+		id: i,
+		icon: iconOther,
+		title: lstOthers[i][3]
+	}).bindPopup(popuptext);
+	layerOthers.addLayer(markerOthers[i]);	
+	
+	markerOthers[i].on('click', function (e) {
+		clickMarker(e, "Other");
+	});		
+}
+
 
 L.control.scale().addTo(map); //the distance scale
 
@@ -273,36 +310,9 @@ map.on('mousemove', function(e) { //puts the lat long in the footer, helps while
 })
 
 map.on('click', function(e) { //click for lat long in sidebar
-	var temp = e.latlng.lat + ", " + e.latlng.lng;
+	var rnd = 6;
+	var temp = (e.latlng.lat).toFixed(rnd) + ", " + (e.latlng.lng).toFixed(rnd);
 	
 	document.getElementById('divRightBody').innerHTML += "<br>"+temp;
+	if (routeMode) {clickRoute(e.latlng.lat, e.latlng.lng);}
 })
-
-
-// Code for manually adding route data, should be temporary //
-var numRoutes=219;
-var color = [];
-var routeNum = [];
-
-function log()
-{//log route data
-	var temp = "";
-	for (var i = 1; i <= numRoutes; i++)
-	{//go through all the routes, grab the form data from each
-		if (document['route'+i] !== undefined)
-		{//defined
-			for (var j = 0; j < document['route'+i].color.length; j++)
-			{//go through each of the color radio buttons and find the selected one
-				if (document['route'+i].color[j].checked)
-				{
-					color[i] = document['route'+i].color[j].value;
-				}
-			}
-			//color[i]=document['route'+i].color.value;
-			routeNum[i]=document['route'+i].routeNum.value;
-		}
-		temp += i+";"+color[i] + ";" + routeNum[i] + "<br>";
-	}
-	document.getElementById('divRightBody').innerHTML = temp;
-}
-

@@ -2,8 +2,10 @@ class RoutesController < ApplicationController
   # GET /Routes
   # GET /routes.json
   def index
-    @route = Route.all
-
+    @route = Route.all(include: :park)
+		
+		
+		
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @route }
@@ -14,7 +16,7 @@ class RoutesController < ApplicationController
   # GET /routes/1.json
   def show
     @route = Route.find(params[:id])
-    @route_point = RoutePoint.where(routeName: @route.name)
+    @route_point = RoutePoint.where(route_id: @route.id)
 
     respond_to do |format|
       format.html # show.html.erb

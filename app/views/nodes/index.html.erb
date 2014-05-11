@@ -1,0 +1,30 @@
+<h1>Listing Nodes</h1> 
+
+<%= link_to 'Add New Node', new_node_path %>
+
+<table class="listTable">
+	<thead><tr>
+    <th>ID</th>
+    <th>lat</th>
+    <th>long</th>
+    <th>POI</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr></thead>
+  <tbody>
+<% @node.each do |node| %>
+  <tr>
+    <td><%= node.id %></td>
+    <td><%= best_in_place node, :lat, inner_class: "latlong" %></td>
+    <td><%= best_in_place node, :long, inner_class: "latlong" %></td>
+    <td><%= best_in_place node, :poi_id, inner_class: "latlong" %></td>
+    <td><%= link_to 'Show', node %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Edit', edit_node_path(node) %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Destroy', node, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+

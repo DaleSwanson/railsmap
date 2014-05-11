@@ -1,0 +1,25 @@
+<%= form_for(@park_alias) do |f| %>
+  <% if @park_alias.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@park_alias.errors.count, "error") %> prohibited this ParkAlias from being saved:</h2>
+
+      <ul>
+      <% @park_alias.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :park_id %><br />
+    <%= f.text_field :park_id %>
+  </div>  
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

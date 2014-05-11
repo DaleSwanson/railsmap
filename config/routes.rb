@@ -1,11 +1,28 @@
-SampleApp::Application.routes.draw do
+Mapman::Application.routes.draw do
   #resources :maps
+  
+  
+  match 'maps/updateRoute/:id/:color/:num/:dis(/:description)', to: 'maps#updateRoute', constraints: {description: /.*/} #/ periods
+  match 'maps/updateColor(/:id/:color)', to: 'maps#updateColor'
+  match 'maps/updateRouteNum(/:id/:num)', to: 'maps#updateRouteNum'
+  match 'maps/randomRoute/:id/:lat/:long(/:num)', to: 'maps#randomRoute', constraints: {lat: /.*/, long: /.*/} #/ periods
+  match 'maps/savePoi/:id/:type/:lat/:long/:height/:name', to: 'maps#savePoi', constraints: {lat: /.*/, long: /.*/} #/ periods
+  match 'maps/deletePoi/:id', to: 'maps#deletePoi'
+  match 'maps/addNewPoi/:lat/:long/:type/:height/:park/:name(/:desc)', to: 'maps#addNewPoi', constraints: {lat: /.*/, long: /.*/, desc: /.*/} #/ periods
+  
   match 'maps/:id(/:data)', to: 'maps#showMap'
+  match 'editroute/:id/:lat/:long', to: 'editroute#breakRoute', constraints: {lat: /.*/, long: /.*/} #/ periods
+  match 'editroute/:id', to: 'editroute#showRoute'
+  
 	#match 'maps/:id', to: 'maps#show'
 	
 	resources :pois
 	resources :parks
 	resources :routes
+	resources :pairs
+	resources :nodes
+	resources :park_aliases
+	resources :poi_types
 	
 	
 	# The priority is based upon order of creation:

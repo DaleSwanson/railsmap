@@ -20,7 +20,7 @@ def haversine(lat1, long1, lat2, long2)
 end
 
 
-allRoutes = Route.all
+allRoutes = Route.where(park_id: 4)
 allRoutes.each do |route| #go through each route
 	max = 0 #max height along route
 	min = 10000 #min height along route

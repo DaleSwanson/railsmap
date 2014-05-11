@@ -1,0 +1,12 @@
+<p id="notice"><%= notice %></p>
+<table>
+	<tr><td><b>ID:</b></td><td><%= @pair.id %></td></tr>
+  <tr><td><b>n1:</b></td><td><%= best_in_place @pair, :n1 %></td></tr>
+  <tr><td><b>n2:</b></td><td><%= best_in_place @pair, :n2 %></td></tr>
+  <tr><td><b>Route ID:</b></td><td><%= best_in_place @pair, :route_id %></td></tr>
+</table>
+
+<%= debug @pair %>
+
+<%= link_to 'Edit', edit_pair_path(@pair) %> |
+<%= link_to 'Back', pairs_path %>

@@ -1,22 +1,57 @@
 <script>
 	
-var formText = 
-	"<input type='text' name='routeNum' style='width:3em' value='0'><br>"+
-	"<label><input type='radio' name='color' value='red' onclick='log()'>Red</label>"+
-	"<label><input type='radio' name='color' value='blue' onclick='log()'>Blue</label>"+
-	"<label><input type='radio' name='color' value='yellow' onclick='log()'>Yellow</label><br>"+
-	"<label><input type='radio' name='color' value='grey' onclick='log()'>Bush</label>"+
-	"<label><input type='radio' name='color' value='brown' onclick='log()'>Herd</label>"+
-	"<label><input type='radio' name='color' value='black' onclick='log()'>Road</label>";
+<% if @data == 'scannedOn' %>layerScans.addTo(map);<% end %>
+<% if @data == 'usgsOn' %>layerUsgs.addTo(map);<% end %>
+
+
 
 <% @allRoutes.each do |route| %>
-	var <%= route.name %> = L.polyline([
-	<% allRoutePoints = RoutePoint.where(routeName: route.name) %>
+	<% if (@data == 'colorizeRoutes' || @colorize == 1) && route.color == '#fff' %>
+		<% defaultColor = randomColor %>
+	<% else %>
+		<% defaultColor = route.color %>
+	<% end %>	
+
+
+	var route_<%= route.id %> = L.polyline([
+	<% allRoutePoints = RoutePoint.where(route_id: route.id) %>
 	<% allRoutePoints.each do |point| %>
 		[<%= point.lat %>, <%= point.long %>],
 	<% end %>
-	],{color:'<%= route.color %>', smoothfactor: 10.0, clickable: true}).bindPopup("<a href='../routes/<%= route.id %>/edit'>Edit</a><br><form name='<%= route.name %>'><%= route.name %><br>"+formText+"</form>");
-	layerTrails.addLayer(<%= route.name %>);
+	],{color: '<%= defaultColor %>', defaultColor: '<%= defaultColor %>', smoothfactor: 10.0, clickable: true,
+	distance: <%= route.distance %>, name: '<%= route.name %>'
+	}).bindPopup(
+	
+	"<%= route.id %> &nbsp;&nbsp;&nbsp;<%= route.name %> &nbsp;&nbsp;&nbsp;"+
+	"<a href='/routes/<%= route.id %>/edit'>Edit</a> &nbsp;&nbsp;&nbsp;"+
+	"<a href='/editroute/<%= route.id %>'>Show</a><br>"+
+	"<form name='form<%= route.id %>'> "+
+	"<table><tr><td><label style='background-color: #f00'><input type='radio' name='routeColor' value='Red'>Red</label></td> "+
+	"<td><label style='background-color: #00f; color: #fff'><input type='radio' name='routeColor' value='Blue'>Blue</label></td>"+
+	"<td><label style='background-color: #ff0'><input type='radio' name='routeColor' value='Yellow'>Yellow</label></td></tr> "+
+	"<tr><td><label><input type='radio' name='routeColor' value='Grey'>Bush</label></td> "+
+	"<td><label><input type='radio' name='routeColor' value='Black'>Road</label></td>"+
+	"<td><label><input type='radio' name='routeColor' value='Brown'>Unblazed</label></td></tr></table>"+
+	"<table><tr><td>Trail Number:</td><td><input type='text' name='routeNum' style='width:5em' value='<%= route.number %>'></td></tr>"+
+	"<tr><td>Mileage:</td><td><input type='text' name='distance' style='width:5em' value='<%= feetToMiles(route.distance) %>'></td></tr>"+
+	"<tr><td>Description:</td><td><textarea name='description' rows='2'><%= route.description %></textarea></td></tr></table>"+
+	"<input type='button' value='Save' onclick='log(<%= route.id %>, route_<%= route.id %>)'> "+
+	"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+
+	"<input type='button' value='Explode' onclick='explode(<%= route.id %>, route_<%= route.id %>)'> "+
+	"</form>"+
+	
+	""
+	
+	);
+	layerTrails.addLayer(route_<%= route.id %>);
 <% end %>
 
+
+
+
+
+
+
 </script>
+
+

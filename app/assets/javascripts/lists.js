@@ -16,4 +16,6 @@
 //= require best_in_place
 //= require bip.js
 //= require best_in_place.purr
-
+//= require jquery.tablesorter.min
+//= require jquery.tablesorter.widgets.min
+//= require sorting.js

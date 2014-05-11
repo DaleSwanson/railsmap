@@ -1,0 +1,34 @@
+<h1>Listing PoiTypes</h1> 
+
+<%= link_to 'Add New PoiType', new_poi_type_path %>
+
+<table class="listTable">
+	<thead><tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Icon</th>
+    <th>Highlight</th>
+    <th>Parameter</th>
+    <th>Size</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr></thead>
+  <tbody>
+<% @poi_type.each do |poi_type| %>
+  <tr>
+    <td><%= poi_type.id %></td>
+    <td><%= best_in_place poi_type, :name %></td>
+    <td><%= best_in_place poi_type, :icon %></td>
+    <td><%= best_in_place poi_type, :highlight %></td>
+    <td><%= best_in_place poi_type, :parameter %></td>
+    <td><%= best_in_place poi_type, :size %></td>
+    <td><%= link_to 'Show', poi_type %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Edit', edit_poi_type_path(poi_type) %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Destroy', poi_type, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+

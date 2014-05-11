@@ -1,0 +1,12 @@
+<p id="notice"><%= notice %></p>
+<table>
+	<tr><td><b>ID:</b></td><td><%= @node.id %></td></tr>
+  <tr><td><b>lat:</b></td><td><%= best_in_place @node, :lat %></td></tr>
+  <tr><td><b>long:</b></td><td><%= best_in_place @node, :long %></td></tr>
+  <tr><td><b>POI ID:</b></td><td><%= best_in_place @node, :poi_id %></td></tr>
+</table>
+
+<%= debug @node %>
+
+<%= link_to 'Edit', edit_node_path(@node) %> |
+<%= link_to 'Back', nodes_path %>

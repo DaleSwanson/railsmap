@@ -10,6 +10,7 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
-//= require leaflet-providers.js
-//= require map.js
+//= require jquery
+//= require utilts.js
 //= require logic.js
+//= require routefinding.js

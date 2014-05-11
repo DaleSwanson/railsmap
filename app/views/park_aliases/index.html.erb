@@ -1,0 +1,30 @@
+<h1>Listing Park Aliases</h1> 
+
+<%= link_to 'Add New Park Alias', new_park_alias_path %>
+
+<table class="listTable">
+	<thead><tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Park_ID</th>
+    <th>Park</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+    <th>&nbsp;</th>
+  </tr></thead>
+  <tbody>
+<% @park_alias.each do |park_alias| %>
+  <tr>
+    <td><%= park_alias.id %></td>
+    <td><%= best_in_place park_alias, :name %></td>
+    <td><%= best_in_place park_alias, :park_id %></td>
+    <td><%= park_alias.park.name %></td>
+    <td><%= link_to 'Show', park_alias %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Edit', edit_park_alias_path(park_alias) %>&nbsp;&nbsp;</td>
+    <td><%= link_to 'Destroy', park_alias, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
+
+

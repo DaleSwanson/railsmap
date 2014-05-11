@@ -1,0 +1,4 @@
+/home/todd/.rvm/gems/ruby-2.0.0-p247/bin/rails
+
+bash: /home/todd/.rvm/gems/ruby-2.0.0-p247/bin:/home/todd/.rvm/gems/ruby-2.0.0-p247@global/bin:/home/todd/.rvm/rubies/ruby-2.0.0-p247/bin:/home/todd/.rvm/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games: No such file or directory
+
